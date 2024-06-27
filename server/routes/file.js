@@ -43,12 +43,9 @@ router.post("/", async (req, res) => {
 
   // Check file type
   if (!isAudioOrVideo(file.mimetype)) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Invalid file type. Please upload a valid audio or video file.",
-      });
+    return res.status(400).json({
+      message: "Invalid file type. Please upload a valid audio or video file.",
+    });
   }
 
   // Create a PassThrough stream from the file buffer
@@ -60,12 +57,10 @@ router.post("/", async (req, res) => {
     const duration = await getFileDuration(passThroughStream);
     console.log("Duration:", duration);
     if (duration === undefined) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Could not determine file duration. Please ensure the file is a valid video or audio format.",
-        });
+      return res.status(400).json({
+        message:
+          "Could not determine file duration. Please ensure the file is a valid video or audio format.",
+      });
     }
     if (duration > 1800) {
       // 30 minutes = 1800 seconds
@@ -93,7 +88,7 @@ router.post("/", async (req, res) => {
 
       // Save metadata to MongoDB
       const newFile = new File({
-        title: null,
+        title: metadata.title,
         description: metadata.description,
         s3Url: data.Location,
       });
@@ -102,12 +97,10 @@ router.post("/", async (req, res) => {
         await newFile.save();
         res.status(200).json({ message: "File uploaded successfully" });
       } catch (err) {
-        res
-          .status(500)
-          .json({
-            message: "Failed to save file metadata to database",
-            error: err.message,
-          });
+        res.status(500).json({
+          message: "Failed to save file metadata to database",
+          error: err.message,
+        });
       }
     });
   } catch (err) {

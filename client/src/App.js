@@ -34,7 +34,7 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/file/")
+      .get(`${process.env.REACT_APP_API_BASE_URL}file/`)
       .then((response) => {
         setFiles(response.data);
       })
@@ -54,7 +54,7 @@ const App = () => {
     formData.append("description", description);
 
     axios
-      .post("http://localhost:5000/api/file/", formData, {
+      .post(`${process.env.REACT_APP_API_BASE_URL}file/`, formData, {
         onUploadProgress: (progressEvent) => {
           setProgress(
             Math.round((progressEvent.loaded * 100) / progressEvent.total)
@@ -83,7 +83,7 @@ const App = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 5 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Video and Audio Upload
+        S3 Audio-Video Filestore
       </Typography>
       <Box component="form" sx={{ mb: 3 }}>
         <TextField
