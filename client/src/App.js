@@ -90,7 +90,7 @@ const App = () => {
           fullWidth
           margin="normal"
           variant="outlined"
-          label="Title"
+          label="Title*"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -98,7 +98,7 @@ const App = () => {
           fullWidth
           margin="normal"
           variant="outlined"
-          label="Description"
+          label="Description*"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
