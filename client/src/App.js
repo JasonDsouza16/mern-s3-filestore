@@ -6,11 +6,7 @@ import {
   Box,
   Button,
   TextField,
-  CircularProgress,
   LinearProgress,
-  List,
-  ListItem,
-  ListItemText,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +15,8 @@ import {
   TableRow,
   Paper,
   Link,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { CloudUpload, Link as LinkIcon } from "@mui/icons-material";
 
@@ -28,6 +26,11 @@ const App = () => {
   const [description, setDescription] = useState("");
   const [progress, setProgress] = useState(0);
   const [files, setFiles] = useState([]);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   useEffect(() => {
     axios
@@ -38,7 +41,7 @@ const App = () => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [file]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -64,9 +67,16 @@ const App = () => {
         setFile(null);
         setTitle("");
         setDescription("");
+        setSnackbar({
+          open: true,
+          message: response.data.message,
+          severity: "success",
+        });
       })
       .catch((error) => {
-        console.error(error);
+        const message =
+          error.response?.data?.message || "Failed to upload file";
+        setSnackbar({ open: true, message: message, severity: "error" });
       });
   };
 
@@ -109,10 +119,9 @@ const App = () => {
         {progress > 0 && (
           <Box sx={{ width: "100%", mt: 2 }}>
             <LinearProgress variant="determinate" value={progress} />
-            <Typography
-              variant="body2"
-              color="text.secondary"
-            >{`${progress}%`}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {`${progress}%`}
+            </Typography>
           </Box>
         )}
         <Button
@@ -125,22 +134,44 @@ const App = () => {
           Upload
         </Button>
       </Box>
-
       <Typography variant="h5" component="h2" gutterBottom>
         Uploaded Files
       </Typography>
       <TableContainer component={Paper}>
-        <Table>
+        <Table
+          sx={{
+            "& td, & th": {
+              borderBottom: 1,
+              borderRight: 1,
+              borderColor: "divider",
+            },
+          }}
+        >
           <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>URL</TableCell>
+            <TableRow sx={{ backgroundColor: "#f0f8ff" }}>
+              <TableCell>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  Title
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  Description
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  URL
+                </Typography>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {files.map((file) => (
-              <TableRow key={file._id}>
+              <TableRow
+                key={file._id}
+                sx={{ "&:hover": { backgroundColor: "#e3f2fd" } }}
+              >
                 <TableCell>{file.title}</TableCell>
                 <TableCell>{file.description}</TableCell>
                 <TableCell>
@@ -149,7 +180,7 @@ const App = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <LinkIcon />
+                    <LinkIcon sx={{ color: "red" }} />
                   </Link>
                 </TableCell>
               </TableRow>
@@ -157,6 +188,19 @@ const App = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+      <br></br>
     </Container>
   );
 };
